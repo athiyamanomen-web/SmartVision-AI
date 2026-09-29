@@ -1,0 +1,17 @@
+{
+    "model": "YOLOv8s",
+    "checkpoint": "E:\\SmartVision-AI\\runs\\detection\\yolov8s_final\\weights\\best.pt",
+    "test_images": 356,
+    "test_instances": 1714,
+    "precision": 0.5579902311805331,
+    "recall": 0.43358837947567813,
+    "map50": 0.4463401578767377,
+    "map50_95": 0.3088889297910856,
+    "speed_ms_per_image": {
+        "preprocess": 0.41341938202074313,
+        "inference": 8.662185674178076,
+        "postprocess": 1.6379008427188484
+    },
+    "device": "NVIDIA GeForce RTX 4050 Laptop GPU",
+    "image_size": 640
+}

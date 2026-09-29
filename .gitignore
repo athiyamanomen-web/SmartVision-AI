@@ -1,0 +1,122 @@
+# ============================================================
+# SmartVision AI - Git Ignore
+# ============================================================
+
+# ------------------------------------------------------------
+# Python cache / compiled files
+# ------------------------------------------------------------
+__pycache__/
+*.py[cod]
+*$py.class
+
+# ------------------------------------------------------------
+# Jupyter temporary files
+# ------------------------------------------------------------
+.ipynb_checkpoints/
+
+# ------------------------------------------------------------
+# Virtual environments
+# ------------------------------------------------------------
+venv/
+.venv/
+env/
+ENV/
+
+# ------------------------------------------------------------
+# IDE / editor files
+# ------------------------------------------------------------
+.vscode/
+.idea/
+
+# ------------------------------------------------------------
+# Operating system files
+# ------------------------------------------------------------
+.DS_Store
+Thumbs.db
+desktop.ini
+
+# ------------------------------------------------------------
+# Environment variables / secrets
+# ------------------------------------------------------------
+.env
+.env.*
+*.secret
+
+# ------------------------------------------------------------
+# Dataset files
+# Dataset is documented but not uploaded to GitHub
+# ------------------------------------------------------------
+data/
+
+# ------------------------------------------------------------
+# Temporary / generated output directory
+# ------------------------------------------------------------
+outputs/
+
+# ------------------------------------------------------------
+# YOLO training runs
+# Ignore everything first, then keep the FINAL detector only
+# ------------------------------------------------------------
+runs/*
+!runs/detection/
+runs/detection/*
+!runs/detection/yolov8s_v2_targeted_15ep/
+runs/detection/yolov8s_v2_targeted_15ep/*
+!runs/detection/yolov8s_v2_targeted_15ep/weights/
+runs/detection/yolov8s_v2_targeted_15ep/weights/*
+!runs/detection/yolov8s_v2_targeted_15ep/weights/best.pt
+
+# ------------------------------------------------------------
+# Model experiments
+# Keep final deployment models, ignore old experiments
+# ------------------------------------------------------------
+models/old_experiments/
+
+# ------------------------------------------------------------
+# ML / experiment caches
+# ------------------------------------------------------------
+mlruns/
+wandb/
+
+# ------------------------------------------------------------
+# Temporary files
+# ------------------------------------------------------------
+*.tmp
+*.temp
+*.log
+
+
+# ============================================================
+# DEPLOYMENT REPOSITORY CLEANUP
+# ============================================================
+
+# ------------------------------------------------------------
+# Old / superseded classification checkpoints
+# Keep only the four FINAL classification models
+# ------------------------------------------------------------
+models/*.pth
+!models/vgg16_final_best.pth
+!models/resnet50_final_best.pth
+!models/mobilenetv2_final_best.pth
+!models/efficientnetb0_final_best.pth
+
+# ------------------------------------------------------------
+# Notebook-generated training artifacts
+# ------------------------------------------------------------
+notebooks/runs/
+notebooks/mlruns/
+notebooks/yolov8*.pt
+
+# ------------------------------------------------------------
+# Scratch notebook
+# ------------------------------------------------------------
+notebooks/Untitled.ipynb
+
+
+# Notebook-downloaded model weights
+notebooks/weights/
+
+# Final repository cleanup
+notebooks/Untitled1.ipynb
+notebooks/Untitled2.ipynb
+models/resnet50_v3_8184_metrics.json

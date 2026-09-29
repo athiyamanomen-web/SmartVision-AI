@@ -1,0 +1,35 @@
+{
+    "selected_model": "YOLOv8s",
+    "checkpoint": "E:\\SmartVision-AI\\runs\\detection\\yolov8s_final\\weights\\best.pt",
+    "dataset": {
+        "classes": 25,
+        "test_images": 356,
+        "test_instances": 1714
+    },
+    "test_metrics": {
+        "precision": 0.558,
+        "recall": 0.4336,
+        "map50": 0.4463,
+        "map50_95": 0.3089,
+        "inference_ms_per_image": 8.66
+    },
+    "failure_analysis": {
+        "confidence_threshold": 0.25,
+        "no_detection_images": 24,
+        "low_confidence_images": 27,
+        "observed_limitations": [
+            "small or distant objects",
+            "object occlusion",
+            "unusual viewpoints and poses",
+            "cluttered scenes",
+            "blur or shallow depth of field",
+            "difficult lighting and strong shadows"
+        ]
+    },
+    "artifacts": {
+        "metrics": "yolov8s_final_test_metrics.json",
+        "prediction_visualization": "yolov8s_final_test_predictions.png",
+        "failure_visualization": "yolov8s_final_failure_cases.png"
+    },
+    "target_note": "The project specification listed mAP@0.50 > 85% as an expected target. The final measured test mAP@0.50 was 44.63%. The measured result is reported without alteration."
+}

@@ -1,0 +1,9 @@
+# ============================================================
+# SmartVision AI - Git LFS Configuration
+# ============================================================
+
+# PyTorch classification model checkpoints
+*.pth filter=lfs diff=lfs merge=lfs -text
+
+# YOLO / PyTorch detector checkpoints
+*.pt filter=lfs diff=lfs merge=lfs -text

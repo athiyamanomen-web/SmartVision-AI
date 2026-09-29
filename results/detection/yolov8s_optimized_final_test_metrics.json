@@ -1,0 +1,10 @@
+{
+    "model": "YOLOv8s Optimized",
+    "weights": "E:\\SmartVision-AI\\runs\\detection\\yolov8s_optimized_640_30ep\\weights\\best.pt",
+    "split": "test",
+    "imgsz": 640,
+    "precision": 0.8361715958159028,
+    "recall": 0.7042688178032412,
+    "mAP50": 0.7784667672874366,
+    "mAP50_95": 0.61588512005007
+}

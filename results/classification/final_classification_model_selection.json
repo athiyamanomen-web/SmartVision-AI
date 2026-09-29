@@ -1,0 +1,20 @@
+{
+    "selected_model": "ResNet50",
+    "checkpoint": "E:\\SmartVision-AI\\models\\resnet50_final_best.pth",
+    "test_accuracy_percent": 86.13333333333333,
+    "precision_macro_percent": 88.18626602156013,
+    "recall_macro_percent": 86.13333333333333,
+    "f1_macro_percent": 86.27102967275383,
+    "top5_accuracy_percent": 97.06666666666666,
+    "parameters_million": 24.569945,
+    "parameter_size_mb": 93.72690200805664,
+    "average_inference_ms": 11.270729000098072,
+    "fps": 88.72540542774993,
+    "selection_reason": "Selected for the final classification pipeline because it achieved the highest test accuracy and highest macro F1 score among the four final classification models while maintaining practical GPU inference speed.",
+    "comparison_notes": {
+        "VGG16": "Fastest measured batch-size-1 GPU inference, but lower classification accuracy and largest model.",
+        "MobileNetV2": "Smallest model, but lowest test accuracy.",
+        "EfficientNetB0": "Compact model with strong accuracy, but slower measured batch-size-1 GPU inference.",
+        "ResNet50": "Highest test accuracy and macro F1 with practical inference performance."
+    }
+}

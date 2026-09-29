@@ -1,0 +1,8 @@
+{
+    "model": "VGG16",
+    "test_accuracy": 0.6615,
+    "precision_macro": 0.73,
+    "recall_macro": 0.66,
+    "macro_f1": 0.66,
+    "num_classes": 26
+}

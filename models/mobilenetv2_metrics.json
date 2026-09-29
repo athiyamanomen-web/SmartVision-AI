@@ -1,0 +1,9 @@
+{
+    "model": "MobileNetV2",
+    "test_accuracy": 0.7205128205128205,
+    "macro_f1": 0.72,
+    "precision_macro": 0.74,
+    "recall_macro": 0.72,
+    "training_time_minutes": 3.34,
+    "num_classes": 26
+}

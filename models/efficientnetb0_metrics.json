@@ -1,0 +1,8 @@
+{
+    "model": "EfficientNetB0",
+    "test_accuracy": 0.7256,
+    "precision_macro": 0.75,
+    "recall_macro": 0.73,
+    "macro_f1": 0.72,
+    "num_classes": 26
+}
