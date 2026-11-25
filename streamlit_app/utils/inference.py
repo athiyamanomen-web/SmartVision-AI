@@ -79,6 +79,8 @@ def classify_image(
         .to(device)
     )
 
+    if device.type == "cuda":
+        torch.cuda.synchronize(device)
     start = time.perf_counter()
 
     with torch.inference_mode():
@@ -92,7 +94,7 @@ def classify_image(
 
     # Synchronize before timing GPU inference
     if device.type == "cuda":
-        torch.cuda.synchronize()
+        torch.cuda.synchronize(device)
 
     latency_ms = (
         time.perf_counter() - start
@@ -177,10 +179,9 @@ def detect_objects(
 
     image = image.convert("RGB")
 
-    np_image = np.array(image)
 
     results = yolo_model.predict(
-        source=np_image,
+        source=image,
         imgsz=640,
         conf=confidence_threshold,
         iou=nms_iou_threshold,

@@ -191,9 +191,9 @@ st.write(
 )
 
 
-# Resolve project root dynamically.
-# Works both locally and in Hugging Face Spaces.
-PROJECT_DIR = Path(__file__).resolve().parent.parent
+PROJECT_DIR = Path(
+    r"E:\SmartVision-AI"
+)
 
 demo_detection = (
     PROJECT_DIR

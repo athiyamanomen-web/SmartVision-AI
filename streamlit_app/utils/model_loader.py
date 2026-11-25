@@ -50,7 +50,7 @@ def _load_checkpoint(model, checkpoint_path, device):
 
     checkpoint = torch.load(
         checkpoint_path,
-        map_location=device,
+        map_location="cpu",
         weights_only=False
     )
 

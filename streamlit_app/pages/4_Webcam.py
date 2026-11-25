@@ -52,7 +52,11 @@ def get_webcam_yolo():
     return load_yolo()
 
 
-yolo_model = get_webcam_yolo()
+try:
+    yolo_model = get_webcam_yolo()
+except Exception:
+    st.error('Webcam initialization failed. Check camera permissions and model availability.')
+    st.stop()
 
 device = get_device(
     prefer_gpu=True
@@ -144,6 +148,26 @@ class SmartVisionVideoProcessor(
 
 
     def recv(self, frame):
+        try:
+            return self._process_frame(frame)
+        except Exception:
+            import logging
+            logging.exception('Webcam frame processing failed')
+            image = frame.to_ndarray(format='bgr24')
+            cv2.putText(image, 'Detection failed - restart camera', (10, 30), cv2.FONT_HERSHEY_SIMPLEX, 0.6, (0, 0, 255), 2)
+            return av.VideoFrame.from_ndarray(image, format='bgr24')
+
+    def _process_frame(self, frame):
+        try:
+            return self._process_frame(frame)
+        except Exception:
+            import logging
+            logging.exception('Webcam frame processing failed')
+            image = frame.to_ndarray(format='bgr24')
+            cv2.putText(image, 'Detection failed - restart camera', (10, 30), cv2.FONT_HERSHEY_SIMPLEX, 0.6, (0, 0, 255), 2)
+            return av.VideoFrame.from_ndarray(image, format='bgr24')
+
+    def _process_frame(self, frame):
 
         # ----------------------------------------------------
         # FRAME -> NUMPY
@@ -366,21 +390,25 @@ info3.metric(
 
 st.subheader("Live Detection")
 
-webrtc_ctx = webrtc_streamer(
-    key="smartvision-webcam",
-    mode=WebRtcMode.SENDRECV,
+try:
+    webrtc_ctx = webrtc_streamer(
+        key="smartvision-webcam",
+        mode=WebRtcMode.SENDRECV,
 
-    video_processor_factory=(
-        SmartVisionVideoProcessor
-    ),
+        video_processor_factory=(
+            SmartVisionVideoProcessor
+        ),
 
-    media_stream_constraints={
-        "video": True,
-        "audio": False
-    },
+        media_stream_constraints={
+            "video": True,
+            "audio": False
+        },
 
-    async_processing=True
-)
+        async_processing=True
+    )
+except Exception:
+    st.error('Webcam initialization failed. Check camera permissions and model availability.')
+    st.stop()
 
 
 # ============================================================

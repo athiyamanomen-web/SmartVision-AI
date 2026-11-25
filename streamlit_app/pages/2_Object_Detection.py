@@ -155,20 +155,28 @@ if uploaded_file is None:
 # LOAD IMAGE
 # ============================================================
 
-image = Image.open(
-    uploaded_file
-).convert("RGB")
+try:
+    image = Image.open(
+        uploaded_file
+    ).convert("RGB")
+except (OSError, ValueError, Image.DecompressionBombError):
+    st.error('Invalid or corrupted image. Please upload a valid JPG or PNG.')
+    st.stop()
 
 
 # ============================================================
 # LOAD YOLO
 # ============================================================
 
-with st.spinner(
-    "Loading SmartVision YOLOv8s..."
-):
+try:
+    with st.spinner(
+        "Loading SmartVision YOLOv8s..."
+    ):
 
-    yolo_model = get_yolo_model()
+        yolo_model = get_yolo_model()
+except Exception:
+    st.error('Detection or verification failed. Check model files and available memory, then retry.')
+    st.stop()
 
 
 # ============================================================
@@ -190,49 +198,57 @@ yolo_device = (
 # RUN DETECTION
 # ============================================================
 
-with st.spinner(
-    "Detecting objects..."
-):
+try:
+    with st.spinner(
+        "Detecting objects..."
+    ):
 
-    start_time = time.perf_counter()
+        start_time = time.perf_counter()
 
-    detections = detect_objects(
-        yolo_model=yolo_model,
-        image=image,
-        confidence_threshold=confidence_threshold,
-        nms_iou_threshold=nms_iou_threshold,
-        device=yolo_device
-    )
+        detections = detect_objects(
+            yolo_model=yolo_model,
+            image=image,
+            confidence_threshold=confidence_threshold,
+            nms_iou_threshold=nms_iou_threshold,
+            device=yolo_device
+        )
 
-    detection_time_ms = (
-        time.perf_counter()
-        - start_time
-    ) * 1000
+        detection_time_ms = (
+            time.perf_counter()
+            - start_time
+        ) * 1000
+except Exception:
+    st.error('Detection or verification failed. Check model files and available memory, then retry.')
+    st.stop()
 
 
 # ============================================================
 # OPTIONAL CNN VERIFICATION
 # ============================================================
 
-if (
-    verify_with_resnet
-    and detections
-):
-
-    with st.spinner(
-        "Verifying detections with ResNet50..."
+try:
+    if (
+        verify_with_resnet
+        and detections
     ):
 
-        resnet_model, resnet_device = (
-            get_resnet_model()
-        )
+        with st.spinner(
+            "Verifying detections with ResNet50..."
+        ):
 
-        detections = verify_detections(
-            image=image,
-            detections=detections,
-            resnet_model=resnet_model,
-            device=resnet_device
-        )
+            resnet_model, resnet_device = (
+                get_resnet_model()
+            )
+
+            detections = verify_detections(
+                image=image,
+                detections=detections,
+                resnet_model=resnet_model,
+                device=resnet_device
+            )
+except Exception:
+    st.error('Detection or verification failed. Check model files and available memory, then retry.')
+    st.stop()
 
 
 # ============================================================

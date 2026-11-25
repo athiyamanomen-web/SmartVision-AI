@@ -141,9 +141,13 @@ if uploaded_file is None:
 # LOAD IMAGE
 # ============================================================
 
-image = Image.open(
-    uploaded_file
-).convert("RGB")
+try:
+    image = Image.open(
+        uploaded_file
+    ).convert("RGB")
+except (OSError, ValueError, Image.DecompressionBombError):
+    st.error('Invalid or corrupted image. Please upload a valid JPG or PNG.')
+    st.stop()
 
 
 left_col, right_col = st.columns(
@@ -190,198 +194,56 @@ def run_model(
 # SINGLE MODEL MODE
 # ============================================================
 
-if model_option != "Compare All Models":
+try:
+    if model_option != "Compare All Models":
 
-    loader_map = {
-        "VGG16": get_vgg16,
-        "ResNet50": get_resnet50,
-        "MobileNetV2": get_mobilenetv2,
-        "EfficientNetB0": get_efficientnetb0
-    }
+        loader_map = {
+            "VGG16": get_vgg16,
+            "ResNet50": get_resnet50,
+            "MobileNetV2": get_mobilenetv2,
+            "EfficientNetB0": get_efficientnetb0
+        }
 
-    result = run_model(
-        model_option,
-        loader_map[model_option]
-    )
-
-    with right_col:
-
-        st.subheader(
-            f"{model_option} Prediction"
+        result = run_model(
+            model_option,
+            loader_map[model_option]
         )
 
-        st.success(
-            f"Prediction: "
-            f"{result['predicted_class']}"
-        )
+        with right_col:
 
-        metric1, metric2 = st.columns(2)
-
-        metric1.metric(
-            "Confidence",
-            f"{result['confidence'] * 100:.2f}%"
-        )
-
-        metric2.metric(
-            "Inference Time",
-            f"{result['latency_ms']:.2f} ms"
-        )
-
-        st.subheader(
-            f"Top-{top_k} Predictions"
-        )
-
-        prediction_df = pd.DataFrame(
-            result["top_predictions"]
-        )
-
-        prediction_df["confidence"] = (
-            prediction_df["confidence"]
-            * 100
-        )
-
-        prediction_df.columns = [
-            "Class",
-            "Confidence (%)"
-        ]
-
-        st.dataframe(
-            prediction_df,
-            use_container_width=True,
-            hide_index=True
-        )
-
-        st.bar_chart(
-            prediction_df.set_index(
-                "Class"
-            )["Confidence (%)"]
-        )
-
-
-# ============================================================
-# COMPARE ALL MODELS
-# ============================================================
-
-else:
-
-    st.subheader(
-        "Four-Model Comparison"
-    )
-
-    loaders = {
-        "VGG16": get_vgg16,
-        "ResNet50": get_resnet50,
-        "MobileNetV2": get_mobilenetv2,
-        "EfficientNetB0": get_efficientnetb0
-    }
-
-    comparison_results = {}
-
-    for name, loader in loaders.items():
-
-        comparison_results[name] = (
-            run_model(
-                name,
-                loader
-            )
-        )
-
-
-    # --------------------------------------------------------
-    # SUMMARY TABLE
-    # --------------------------------------------------------
-
-    summary_rows = []
-
-    for name, result in (
-        comparison_results.items()
-    ):
-
-        summary_rows.append({
-            "Model": name,
-            "Prediction":
-                result["predicted_class"],
-
-            "Confidence (%)":
-                result["confidence"] * 100,
-
-            "Inference (ms)":
-                result["latency_ms"]
-        })
-
-
-    summary_df = pd.DataFrame(
-        summary_rows
-    )
-
-    summary_df[
-        "Confidence (%)"
-    ] = summary_df[
-        "Confidence (%)"
-    ].round(2)
-
-    summary_df[
-        "Inference (ms)"
-    ] = summary_df[
-        "Inference (ms)"
-    ].round(2)
-
-
-    with right_col:
-
-        st.subheader(
-            "Prediction Summary"
-        )
-
-        st.dataframe(
-            summary_df,
-            use_container_width=True,
-            hide_index=True
-        )
-
-
-    # --------------------------------------------------------
-    # INDIVIDUAL TOP-K RESULTS
-    # --------------------------------------------------------
-
-    st.divider()
-
-    st.subheader(
-        f"Top-{top_k} Predictions by Model"
-    )
-
-    model_columns = st.columns(2)
-
-    for index, (
-        name,
-        result
-    ) in enumerate(
-        comparison_results.items()
-    ):
-
-        with model_columns[index % 2]:
-
-            st.markdown(
-                f"### {name}"
+            st.subheader(
+                f"{model_option} Prediction"
             )
 
-            st.write(
-                f"**Prediction:** "
+            st.success(
+                f"Prediction: "
                 f"{result['predicted_class']}"
             )
 
-            st.write(
-                f"**Confidence:** "
+            metric1, metric2 = st.columns(2)
+
+            metric1.metric(
+                "Confidence",
                 f"{result['confidence'] * 100:.2f}%"
+            )
+
+            metric2.metric(
+                "Inference Time",
+                f"{result['latency_ms']:.2f} ms"
+            )
+
+            st.subheader(
+                f"Top-{top_k} Predictions"
             )
 
             prediction_df = pd.DataFrame(
                 result["top_predictions"]
             )
 
-            prediction_df[
-                "confidence"
-            ] *= 100
+            prediction_df["confidence"] = (
+                prediction_df["confidence"]
+                * 100
+            )
 
             prediction_df.columns = [
                 "Class",
@@ -393,6 +255,152 @@ else:
                 use_container_width=True,
                 hide_index=True
             )
+
+            st.bar_chart(
+                prediction_df.set_index(
+                    "Class"
+                )["Confidence (%)"]
+            )
+
+
+    # ============================================================
+    # COMPARE ALL MODELS
+    # ============================================================
+
+    else:
+
+        st.subheader(
+            "Four-Model Comparison"
+        )
+
+        loaders = {
+            "VGG16": get_vgg16,
+            "ResNet50": get_resnet50,
+            "MobileNetV2": get_mobilenetv2,
+            "EfficientNetB0": get_efficientnetb0
+        }
+
+        comparison_results = {}
+
+        for name, loader in loaders.items():
+
+            comparison_results[name] = (
+                run_model(
+                    name,
+                    loader
+                )
+            )
+
+
+        # --------------------------------------------------------
+        # SUMMARY TABLE
+        # --------------------------------------------------------
+
+        summary_rows = []
+
+        for name, result in (
+            comparison_results.items()
+        ):
+
+            summary_rows.append({
+                "Model": name,
+                "Prediction":
+                    result["predicted_class"],
+
+                "Confidence (%)":
+                    result["confidence"] * 100,
+
+                "Inference (ms)":
+                    result["latency_ms"]
+            })
+
+
+        summary_df = pd.DataFrame(
+            summary_rows
+        )
+
+        summary_df[
+            "Confidence (%)"
+        ] = summary_df[
+            "Confidence (%)"
+        ].round(2)
+
+        summary_df[
+            "Inference (ms)"
+        ] = summary_df[
+            "Inference (ms)"
+        ].round(2)
+
+
+        with right_col:
+
+            st.subheader(
+                "Prediction Summary"
+            )
+
+            st.dataframe(
+                summary_df,
+                use_container_width=True,
+                hide_index=True
+            )
+
+
+        # --------------------------------------------------------
+        # INDIVIDUAL TOP-K RESULTS
+        # --------------------------------------------------------
+
+        st.divider()
+
+        st.subheader(
+            f"Top-{top_k} Predictions by Model"
+        )
+
+        model_columns = st.columns(2)
+
+        for index, (
+            name,
+            result
+        ) in enumerate(
+            comparison_results.items()
+        ):
+
+            with model_columns[index % 2]:
+
+                st.markdown(
+                    f"### {name}"
+                )
+
+                st.write(
+                    f"**Prediction:** "
+                    f"{result['predicted_class']}"
+                )
+
+                st.write(
+                    f"**Confidence:** "
+                    f"{result['confidence'] * 100:.2f}%"
+                )
+
+                prediction_df = pd.DataFrame(
+                    result["top_predictions"]
+                )
+
+                prediction_df[
+                    "confidence"
+                ] *= 100
+
+                prediction_df.columns = [
+                    "Class",
+                    "Confidence (%)"
+                ]
+
+                st.dataframe(
+                    prediction_df,
+                    use_container_width=True,
+                    hide_index=True
+                )
+except Exception:
+    st.error('Classification failed. Check model files and available memory, then retry.')
+    st.stop()
 
 
 st.divider()
