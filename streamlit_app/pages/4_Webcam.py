@@ -157,15 +157,6 @@ class SmartVisionVideoProcessor(
             cv2.putText(image, 'Detection failed - restart camera', (10, 30), cv2.FONT_HERSHEY_SIMPLEX, 0.6, (0, 0, 255), 2)
             return av.VideoFrame.from_ndarray(image, format='bgr24')
 
-    def _process_frame(self, frame):
-        try:
-            return self._process_frame(frame)
-        except Exception:
-            import logging
-            logging.exception('Webcam frame processing failed')
-            image = frame.to_ndarray(format='bgr24')
-            cv2.putText(image, 'Detection failed - restart camera', (10, 30), cv2.FONT_HERSHEY_SIMPLEX, 0.6, (0, 0, 255), 2)
-            return av.VideoFrame.from_ndarray(image, format='bgr24')
 
     def _process_frame(self, frame):
 
@@ -390,10 +381,33 @@ info3.metric(
 
 st.subheader("Live Detection")
 
+# WebRTC network configuration
+ice_servers = [
+    {"urls": ["stun:stun.l.google.com:19302"]}
+]
+
+try:
+    turn = st.secrets.get("turn", {})
+
+    if all(turn.get(k) for k in ("urls", "username", "credential")):
+        ice_servers.append({
+            "urls": turn["urls"],
+            "username": turn["username"],
+            "credential": turn["credential"]
+        })
+except Exception:
+    pass
+
+
+
 try:
     webrtc_ctx = webrtc_streamer(
         key="smartvision-webcam",
         mode=WebRtcMode.SENDRECV,
+        rtc_configuration={
+            "iceServers": ice_servers
+        },
+
 
         video_processor_factory=(
             SmartVisionVideoProcessor
