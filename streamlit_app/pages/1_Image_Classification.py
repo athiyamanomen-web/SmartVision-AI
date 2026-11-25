@@ -5,6 +5,7 @@ from pathlib import Path
 import pandas as pd
 import streamlit as st
 from PIL import Image
+from io import BytesIO
 
 
 # ============================================================
@@ -142,11 +143,38 @@ if uploaded_file is None:
 # ============================================================
 
 try:
-    image = Image.open(
-        uploaded_file
-    ).convert("RGB")
-except (OSError, ValueError, Image.DecompressionBombError):
-    st.error('Invalid or corrupted image. Please upload a valid JPG or PNG.')
+    image_bytes = uploaded_file.getvalue()
+
+    # Validate supported image signatures
+    is_jpeg = image_bytes.startswith(b"\xff\xd8\xff")
+    is_png = image_bytes.startswith(b"\x89PNG\r\n\x1a\n")
+
+    if not (is_jpeg or is_png):
+        raise ValueError("Unsupported or invalid image format")
+
+    # Verify image integrity
+    with Image.open(BytesIO(image_bytes)) as validation_image:
+        if validation_image.format not in ("JPEG", "PNG"):
+            raise ValueError("Unsupported image format")
+
+        validation_image.verify()
+
+    # Reopen and fully decode the verified image
+    with Image.open(BytesIO(image_bytes)) as decoded_image:
+        image = decoded_image.convert("RGB")
+        image.load()
+
+except (
+    OSError,
+    ValueError,
+    ImportError,
+    SyntaxError,
+    Image.DecompressionBombError
+):
+    st.error(
+        "Invalid or corrupted image. "
+        "Please upload a valid JPG or PNG."
+    )
     st.stop()
 
 
